@@ -8,6 +8,7 @@ colors.enable();
 
 const Anim = require("./database/anim.model");
 const connect = require("./database/connect");
+const PORT = 4000 || 4001;
 const app = express();
 
 app.use(
@@ -35,8 +36,8 @@ app.post("/api/anime", async (req, res) => {
   res.json(anime);
 });
 
-app.listen(8000, () => {
-  console.log("server listening on port 8000");
+app.listen({PORT}, () => {
+  console.log(`server listening on port ${PORT}`);
 
   // connect to the database
   connect();

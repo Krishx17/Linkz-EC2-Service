@@ -1,0 +1,28 @@
+name: Deploy node services 
+
+on: 
+  push: 
+    branches:
+      - master
+
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source 
+        uses: action/checkout@v4
+      - name: Login to docker hub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+      - name: Build Docker Image
+        run: docker build -t rudy45kc/linkznodejs .
+      - name: Publish Image to Docker hub
+        run: docker push rudy45kc/linkznodejs:latest
+  
+  deploy: 
+    needs: build
+    runs-on: self-hosted
+    steps: 
+      - name: Pull image from docker hub
+        run: docker pull rudy45kc/linkznodejs:latest
+      - name: Run Docker Container
+        run: docker run -d -p 4000:4000 --name linkznodejs-container -e MONGO_PASSWORD='${{ secrets.MONGO_PASSWORD }}' rudy45kc/linkznodejs
